@@ -4,7 +4,7 @@
 constexpr int WIDTH = 16;
 constexpr int HEIGHT = 16;
 
-NeoPixelBus<NeoGrbFeature, NeoEsp8266DmaWs2812xMethod> leds{1};
+NeoPixelBus<NeoGrbFeature, NeoEsp8266DmaWs2812xMethod> leds{WIDTH * HEIGHT};
 NeoPixelAnimator animatior{1};
 NeoTopology<ColumnMajorAlternatingLayout> topo{WIDTH, HEIGHT};
 
@@ -23,13 +23,20 @@ void SpriteSheetAnimation(NeoVerticalSpriteSheet<NeoBufferProgmemMethod<NeoGrbFe
   sprite.Blt(leds, 0, 0, sprite_index, LayoutMap);
 }
 
+void TestAnimation(AnimationParam param) {
+  int index = param.progress * 255;
+  leds.SetPixelColor(index, RgbColor(255, 128, 128));
+  //leds.SetPixelColor(0, RgbColor(128, 128, 256));
+}
+
 void setup() {
   leds.Begin();
 }
 
 void loop() {
   if (!animatior.IsAnimationActive(0)) {
-    animatior.StartAnimation(0, 10000, [](auto param) {return SpriteSheetAnimation(sprites.at(rand() % sprites.size()), param);});
+    //animatior.StartAnimation(0, 10000, [](auto param) {return SpriteSheetAnimation(sprites.at(rand() % sprites.size()), param);});
+    animatior.StartAnimation(0, 10000, TestAnimation);
   }
 
   animatior.UpdateAnimations();
